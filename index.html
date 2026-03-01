@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Plus - Prototype</title>
+    <link rel="stylesheet">
+    <style>
+        /* CSS : Design & Layout */
+        :root {
+            --bg-green: #7ebba2;
+            --primary-teal: #009678;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-dark: #1a3a34;
+            --failed-red: #e91e63;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: var(--bg-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 30%),
+                              radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 30%);
+        }
+
+        /* Effet Glassmorphism réutilisable */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- PAGE DE CONNEXION --- */
+        #login-page {
+            width: 380px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .logo-box {
+            width: 65px;
+            height: 65px;
+            background: white;
+            color: var(--primary-teal);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        h1 { color: var(--text-dark); margin-bottom: 25px; font-weight: 500; }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 25px;
+            background: var(--primary-teal);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-login:hover { background: #007a62; }
+
+        /* --- DASHBOARD --- */
+        #dashboard {
+            width: 95vw;
+            height: 90vh;
+            display: none; /* Caché au début */
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            color: var(--primary-teal);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .user-card i { font-size: 45px; color: var(--primary-teal); background: white; border-radius: 50%; padding: 5px; }
+
+        .user-info strong { display: block; font-size: 16px; }
+        .user-info span { font-size: 12px; opacity: 0.8; }
+
+        .nav-menu { flex-grow: 1; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-link.active {
+            background: var(--primary-teal);
+            color: white;
+        }
+
+        .nav-link:not(.active):hover { background: rgba(255,255,255,0.3); }
+
+        /* Contenu Principal */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .top-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .bottom-row { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+
+        .stat-card { padding: 25px; text-align: center; position: relative; }
+        .stat-card h3 { margin: 0; opacity: 0.7; font-size: 14px; }
+        .big-avg { font-size: 48px; font-weight: bold; margin: 10px 0; }
+
+        /* Progress Bar */
+        .progress-container {
+            height: 12px;
+            background: white;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: flex;
+        }
+        .progress-red { background: #ff4d4d; width: 40%; }
+        .progress-green { background: #2ecc71; width: 30%; }
+
+        .stats-summary { display: flex; justify-content: space-around; margin-top: 20px; }
+        .stats-summary div span { display: block; font-size: 12px; opacity: 0.7; }
+
+        /* Tables */
+        .table-card { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; font-size: 13px; color: var(--primary-teal); padding-bottom: 10px; }
+        td { padding: 12px 8px; border-top: 1px solid rgba(0,0,0,0.05); font-size: 14px; }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 50px;
+            text-align: center;
+        }
+        .bg-teal { background: var(--primary-teal); }
+        .bg-red { background: var(--failed-red); }
+
+        /* Bouton d'aide */
+        .help-fab {
+            position: fixed; bottom: 25px; right: 25px;
+            width: 55px; height: 55px; background: white;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 28px;
+            color: var(--primary-teal); font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="glass">
+        <div class="logo-box">P</div>
+        <h1>Progress Plus</h1>
+        <form id="loginForm">
+            <input type="text" placeholder="Registration Number" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+    </div>
+
+    <div id="dashboard">
+        <aside class="sidebar glass">
+            <div class="sidebar-brand">
+                <div class="logo-box" style="width:40px; height:40px; font-size:20px; margin:0;">P</div>
+                <h2 style="margin:0; font-size:22px;">Progress Plus</h2>
+            </div>
+
+            <div class="user-card">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-info">
+                    <strong>Benhacene HOCINE</strong>
+                    <span>2nd Year Computer Science</span>
+                    <br><small>202434116518</small>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active"><i class="fas fa-book"></i> Academic Marks</a>
+                <a href="#" class="nav-link"><i class="fas fa-clock"></i> The Timetable</a>
+                <a href="#" class="nav-link"><i class="fas fa-folder-open"></i> Administrative</a>
+                <a href="#" class="nav-link"><i class="fas fa-play-circle"></i> E-Learning</a>
+                <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">
+                <a href="#" class="nav-link"><i class="fas fa-newspaper"></i> News</a>
+                <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-row">
+                <div class="glass stat-card">
+                    <h3>Overall Average</h3>
+                    <div class="big-avg">10.01</div>
+                    <div class="progress-container">
+                        <div class="progress-red"></div>
+                        <div class="progress-green"></div>
+                    </div>
+                    <div class="stats-summary">
+                        <div><span>Class Passed</span><strong>5/7</strong></div>
+                        <div><span>Class Failed</span><strong>2/7</strong></div>
+                        <div><span>Credit</span><strong>30</strong></div>
+                    </div>
+                </div>
+
+                <div class="glass stat-card">
+                    <h3 style="text-align:left; margin-bottom:15px;">Notes</h3>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="background:white; padding:8px; border-radius:8px;">Dr.Ouled-Aissa</div>
+                        <div style="background:white; padding:8px; border-radius:8px;">Dr.Nahal</div>
+                        <div style="background:white; padding:8px; border-radius:8px;">Dr.Cheba-Mouna</div>
+                        <div style="background:white; padding:8px; border-radius:8px;">Dr.Ferfara</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-row">
+                <div class="glass table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Coef</th>
+                                <th>Credit</th>
+                                <th>TD</th>
+                                <th>TP</th>
+                                <th>Exam</th>
+                                <th>Avg</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Architecture D'ordi</td><td>3</td><td>5</td><td>8</td><td>8</td><td>15</td><td><span class="badge bg-teal">12.20</span></td></tr>
+                            <tr><td>Algorithmes</td><td>4</td><td>6</td><td>9</td><td>12</td><td>5</td><td><span class="badge bg-red">7.20</span></td></tr>
+                            <tr><td>SI</td><td>2</td><td>4</td><td>13</td><td>/</td><td>10</td><td><span class="badge bg-red">7.20</span></td></tr>
+                            <tr><td>POO</td><td>4</td><td>5</td><td>10</td><td>/</td><td>7</td><td><span class="badge bg-red">8.20</span></td></tr>
+                            <tr><td>Méthodes Num</td><td>2</td><td>4</td><td>/</td><td>15</td><td>9</td><td><span class="badge bg-teal">11.40</span></td></tr>
+                            <tr><td>Proba & Stats</td><td>2</td><td>4</td><td>13</td><td>/</td><td>12</td><td><span class="badge bg-teal">12.40</span></td></tr>
+                            <tr><td>Anglais</td><td>1</td><td>2</td><td>/</td><td>/</td><td>12</td><td><span class="badge bg-teal">12.00</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="glass table-card">
+                    <h3 style="font-size:14px; opacity:0.7;">Missed</h3>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Architecture D'ordi</span><strong>2</strong></div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Algorithmes</span><strong>0</strong></div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>SI</span><strong>1</strong></div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>POO</span><strong>0</strong></div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Méthodes Num</span><strong>0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="help-fab">!</div>
+
+    <script>
+        // JS : Logique de transition
+        const loginForm = document.getElementById('loginForm');
+        const loginPage = document.getElementById('login-page');
+        const dashboard = document.getElementById('dashboard');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Empêche le rechargement de la page
+            
+            // Effet de sortie
+            loginPage.style.opacity = '0';
+            loginPage.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'grid';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
